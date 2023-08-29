@@ -127,13 +127,16 @@ function determineProfilePath() {
   }
 }
 
-export function setProfile(profile: string, creds?: Partial<Credentials>) {
+export function setProfile(profile: string, region: string, creds?: Partial<Credentials>) {
   if (!profile) {
     return;
   }
   const profilePath = determineProfilePath();
   const profileSection = `[${profile}]`;
-  const profileCreds = creds || {};
+  const profileCreds = {
+    ...creds,
+    AWS_REGION: region
+  }
   const profileCredsString = Object.keys(profileCreds)
     .map((key) => `${key} = ${profileCreds[key as keyof Credentials]}`)
     .join('\n');
@@ -143,7 +146,7 @@ export function setProfile(profile: string, creds?: Partial<Credentials>) {
   core.debug(`Writing profile ${profile} to ${profilePath}`);
   core.debug(`Profile string:\n${profileString}`);
 
-  fs.appendFileSync(profilePath, profileString);
+  fs.writeFileSync(profilePath, profileString);
 }
 
 // Retries the promise with exponential backoff if the error isRetryable up to maxRetries time.

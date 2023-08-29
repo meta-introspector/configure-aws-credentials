@@ -182,7 +182,7 @@ export async function run() {
         await credentialsClient.validateCredentials(roleCredentials.Credentials?.AccessKeyId);
       }
       await exportAccountId(credentialsClient, maskAccountId);
-      setProfile(profile, roleCredentials.Credentials);
+      setProfile(profile, region, roleCredentials.Credentials);
     } else {
       core.info('Proceeding with IAM user credentials');
     }
