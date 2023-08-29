@@ -366,20 +366,23 @@ function determineProfilePath() {
             throw new Error(`Unexpected OS '${os}'`);
     }
 }
-function setProfile(profile, creds) {
+function setProfile(profile, region, creds) {
     if (!profile) {
         return;
     }
     const profilePath = determineProfilePath();
     const profileSection = `[${profile}]`;
-    const profileCreds = creds || {};
+    const profileCreds = {
+        ...creds,
+        AWS_REGION: region
+    };
     const profileCredsString = Object.keys(profileCreds)
         .map((key) => `${key} = ${profileCreds[key]}`)
         .join('\n');
     const profileString = `${profileSection}\n${profileCredsString}\n`;
     core.debug(`Writing profile ${profile} to ${profilePath}`);
     core.debug(`Profile string:\n${profileString}`);
-    fs.appendFileSync(profilePath, profileString);
+    fs.writeFileSync(profilePath, profileString);
 }
 exports.setProfile = setProfile;
 // Retries the promise with exponential backoff if the error isRetryable up to maxRetries time.
@@ -596,7 +599,7 @@ async function run() {
                 await credentialsClient.validateCredentials(roleCredentials.Credentials?.AccessKeyId);
             }
             await (0, helpers_1.exportAccountId)(credentialsClient, maskAccountId);
-            (0, helpers_1.setProfile)(profile, roleCredentials.Credentials);
+            (0, helpers_1.setProfile)(profile, region, roleCredentials.Credentials);
         }
         else {
             core.info('Proceeding with IAM user credentials');
