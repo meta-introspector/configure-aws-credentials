@@ -112,16 +112,16 @@ export function verifyKeys(creds: Partial<Credentials> | undefined) {
   return true;
 }
 
-function determineProfilePath() {
+function determineAwsPath() {
   const os = platform();
 
   switch (os) {
     case 'darwin':
-      return `${process.env['HOME']}/.aws/credentials`;
+      return `${process.env['HOME']}/.aws`;
     case 'linux':
-      return `${process.env['HOME']}/.aws/credentials`;
+      return `${process.env['HOME']}/.aws`;
     case 'win32':
-      return `${process.env['USERPROFILE']}\\.aws\\credentials`;
+      return `${process.env['USERPROFILE']}\\.aws`;
     default:
       throw new Error(`Unexpected OS '${os}'`);
   }
@@ -131,12 +131,12 @@ export function setProfile(profile: string, region: string, creds?: Partial<Cred
   if (!profile) {
     return;
   }
-  const profilePath = determineProfilePath();
+  const profilePath = determineAwsPath();
   const profileSection = `[${profile}]`;
   const profileCreds = {
     ...creds,
-    AWS_REGION: region
-  }
+    AWS_REGION: region,
+  };
   const profileCredsString = Object.keys(profileCreds)
     .map((key) => `${key} = ${profileCreds[key as keyof Credentials]}`)
     .join('\n');
@@ -146,7 +146,11 @@ export function setProfile(profile: string, region: string, creds?: Partial<Cred
   core.debug(`Writing profile ${profile} to ${profilePath}`);
   core.debug(`Profile string:\n${profileString}`);
 
-  fs.writeFileSync(profilePath, profileString);
+  fs.mkdirSync(profilePath, {
+    recursive: true,
+  });
+  const credentialsFilePath = platform() === 'win32' ? `${profilePath}\\credentials` : `${profilePath}/credentials`;
+  fs.writeFileSync(credentialsFilePath, profileString);
 }
 
 // Retries the promise with exponential backoff if the error isRetryable up to maxRetries time.

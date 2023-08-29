@@ -1,4 +1,4 @@
-name: Update dist files on main branch
+name: Package dist files on main branch
 
 on:
   push:
