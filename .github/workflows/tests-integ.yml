@@ -29,7 +29,7 @@ jobs:
           role-external-id: ${{ secrets.SECRETS_OIDC_AWS_ROLE_EXTERNAL_ID }}
       - name: Check Profile
         run: |
-          more .aws/credentials
+          ls
   integ-access-keys:
     strategy:
       fail-fast: false
@@ -53,7 +53,7 @@ jobs:
           role-external-id: ${{ secrets.SECRETS_AWS_ROLE_EXTERNAL_ID }}
       - name: Check Profile
         run: |
-          more .aws/credentials
+          ls
   integ-access-keys-env:
     strategy:
       fail-fast: false
