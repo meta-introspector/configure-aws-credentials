@@ -27,9 +27,10 @@ jobs:
           role-duration-seconds: 900
           role-session-name: IntegOidcAssumeRole
           role-external-id: ${{ secrets.SECRETS_OIDC_AWS_ROLE_EXTERNAL_ID }}
+          profile: test
       - name: Check Profile
         run: |
-          ls
+          aws configure list-profiles
   integ-access-keys:
     strategy:
       fail-fast: false
@@ -51,6 +52,7 @@ jobs:
           role-to-assume: ${{ secrets.SECRETS_AWS_ROLE_TO_ASSUME }}
           role-session-name: IntegAccessKeysAssumeRole
           role-external-id: ${{ secrets.SECRETS_AWS_ROLE_EXTERNAL_ID }}
+          profile: test
       - name: Check Profile
         run: |
           ls
