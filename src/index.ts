@@ -1,4 +1,3 @@
-import { platform } from 'os';
 import * as core from '@actions/core';
 import type { AssumeRoleCommandOutput } from '@aws-sdk/client-sts';
 import { assumeRole } from './assumeRole';
@@ -9,6 +8,7 @@ import {
   exportRegion,
   exportCredentials,
   exportAccountId,
+  setProfile,
   unsetCredentials,
   verifyKeys,
 } from './helpers';
@@ -45,6 +45,7 @@ export async function run() {
     const outputCredentials = outputCredentialsInput.toLowerCase() === 'true';
     const unsetCurrentCredentialsInput = core.getInput('unset-current-credentials', { required: false }) || 'false';
     const unsetCurrentCredentials = unsetCurrentCredentialsInput.toLowerCase() === 'true';
+    const profile = core.getInput('profile', { required: false });
     const disableRetryInput = core.getInput('disable-retry', { required: false }) || 'false';
     let disableRetry = disableRetryInput.toLowerCase() === 'true';
     const specialCharacterWorkaroundInput =
@@ -64,8 +65,6 @@ export async function run() {
     for (const managedSessionPolicy of managedSessionPoliciesInput) {
       managedSessionPolicies.push({ arn: managedSessionPolicy });
     }
-
-    core.info(platform());
 
     // Logic to decide whether to attempt to use OIDC or not
     const useGitHubOIDCProvider = () => {
@@ -183,6 +182,7 @@ export async function run() {
         await credentialsClient.validateCredentials(roleCredentials.Credentials?.AccessKeyId);
       }
       await exportAccountId(credentialsClient, maskAccountId);
+      setProfile(profile, roleCredentials.Credentials);
     } else {
       core.info('Proceeding with IAM user credentials');
     }

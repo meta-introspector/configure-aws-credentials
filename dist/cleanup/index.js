@@ -20658,7 +20658,9 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.isDefined = exports.errorMessage = exports.retryAndBackoff = exports.verifyKeys = exports.reset = exports.withsleep = exports.defaultSleep = exports.sanitizeGitHubVariables = exports.exportAccountId = exports.exportRegion = exports.unsetCredentials = exports.exportCredentials = void 0;
+exports.isDefined = exports.errorMessage = exports.retryAndBackoff = exports.setProfile = exports.verifyKeys = exports.reset = exports.withsleep = exports.defaultSleep = exports.sanitizeGitHubVariables = exports.exportAccountId = exports.exportRegion = exports.unsetCredentials = exports.exportCredentials = void 0;
+const fs = __importStar(__nccwpck_require__(7147));
+const os_1 = __nccwpck_require__(2037);
 const core = __importStar(__nccwpck_require__(2186));
 const client_sts_1 = __nccwpck_require__(2209);
 const MAX_TAG_VALUE_LENGTH = 256;
@@ -20765,6 +20767,35 @@ function verifyKeys(creds) {
     return true;
 }
 exports.verifyKeys = verifyKeys;
+function determineProfilePath() {
+    const os = (0, os_1.platform)();
+    switch (os) {
+        case 'darwin':
+            return `${process.env['HOME']}/.aws/credentials`;
+        case 'linux':
+            return `${process.env['HOME']}/.aws/credentials`;
+        case 'win32':
+            return `${process.env['USERPROFILE']}\\.aws\\credentials`;
+        default:
+            throw new Error(`Unexpected OS '${os}'`);
+    }
+}
+function setProfile(profile, creds) {
+    if (!profile) {
+        return;
+    }
+    const profilePath = determineProfilePath();
+    const profileSection = `[${profile}]`;
+    const profileCreds = creds || {};
+    const profileCredsString = Object.keys(profileCreds)
+        .map((key) => `${key} = ${profileCreds[key]}`)
+        .join('\n');
+    const profileString = `${profileSection}\n${profileCredsString}\n`;
+    core.debug(`Writing profile ${profile} to ${profilePath}`);
+    core.debug(`Profile string:\n${profileString}`);
+    fs.appendFileSync(profilePath, profileString);
+}
+exports.setProfile = setProfile;
 // Retries the promise with exponential backoff if the error isRetryable up to maxRetries time.
 async function retryAndBackoff(fn, isRetryable, maxRetries = 12, retries = 0, base = 50) {
     try {

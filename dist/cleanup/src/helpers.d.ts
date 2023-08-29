@@ -10,6 +10,7 @@ declare let sleep: typeof defaultSleep;
 export declare function withsleep(s: typeof sleep): void;
 export declare function reset(): void;
 export declare function verifyKeys(creds: Partial<Credentials> | undefined): boolean;
+export declare function setProfile(profile: string, creds?: Partial<Credentials>): void;
 export declare function retryAndBackoff<T>(fn: () => Promise<T>, isRetryable: boolean, maxRetries?: number, retries?: number, base?: number): Promise<T>;
 export declare function errorMessage(error: unknown): string;
 export declare function isDefined<T>(i: T | undefined | null): i is T;

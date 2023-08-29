@@ -1,3 +1,5 @@
+import * as fs from 'fs';
+import { platform } from 'os';
 import * as core from '@actions/core';
 import type { Credentials } from '@aws-sdk/client-sts';
 import { GetCallerIdentityCommand } from '@aws-sdk/client-sts';
@@ -108,6 +110,40 @@ export function verifyKeys(creds: Partial<Credentials> | undefined) {
     }
   }
   return true;
+}
+
+function determineProfilePath() {
+  const os = platform();
+
+  switch (os) {
+    case 'darwin':
+      return `${process.env['HOME']}/.aws/credentials`;
+    case 'linux':
+      return `${process.env['HOME']}/.aws/credentials`;
+    case 'win32':
+      return `${process.env['USERPROFILE']}\\.aws\\credentials`;
+    default:
+      throw new Error(`Unexpected OS '${os}'`);
+  }
+}
+
+export function setProfile(profile: string, creds?: Partial<Credentials>) {
+  if (!profile) {
+    return;
+  }
+  const profilePath = determineProfilePath();
+  const profileSection = `[${profile}]`;
+  const profileCreds = creds || {};
+  const profileCredsString = Object.keys(profileCreds)
+    .map((key) => `${key} = ${profileCreds[key as keyof Credentials]}`)
+    .join('\n');
+
+  const profileString = `${profileSection}\n${profileCredsString}\n`;
+
+  core.debug(`Writing profile ${profile} to ${profilePath}`);
+  core.debug(`Profile string:\n${profileString}`);
+
+  fs.appendFileSync(profilePath, profileString);
 }
 
 // Retries the promise with exponential backoff if the error isRetryable up to maxRetries time.
