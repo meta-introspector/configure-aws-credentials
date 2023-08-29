@@ -1,3 +1,4 @@
+import { platform } from 'os';
 import * as core from '@actions/core';
 import type { AssumeRoleCommandOutput } from '@aws-sdk/client-sts';
 import { assumeRole } from './assumeRole';
@@ -63,6 +64,8 @@ export async function run() {
     for (const managedSessionPolicy of managedSessionPoliciesInput) {
       managedSessionPolicies.push({ arn: managedSessionPolicy });
     }
+
+    core.info(platform());
 
     // Logic to decide whether to attempt to use OIDC or not
     const useGitHubOIDCProvider = () => {

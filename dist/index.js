@@ -414,6 +414,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.run = void 0;
+const os_1 = __nccwpck_require__(22037);
 const core = __importStar(__nccwpck_require__(42186));
 const assumeRole_1 = __nccwpck_require__(61209);
 const CredentialsClient_1 = __nccwpck_require__(3301);
@@ -467,6 +468,7 @@ async function run() {
         for (const managedSessionPolicy of managedSessionPoliciesInput) {
             managedSessionPolicies.push({ arn: managedSessionPolicy });
         }
+        core.info((0, os_1.platform)());
         // Logic to decide whether to attempt to use OIDC or not
         const useGitHubOIDCProvider = () => {
             // The `ACTIONS_ID_TOKEN_REQUEST_TOKEN` environment variable is set when the `id-token` permission is granted.
