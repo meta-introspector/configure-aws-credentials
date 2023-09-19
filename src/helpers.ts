@@ -66,7 +66,7 @@ export async function exportAccountId(
   if (!accountId) {
     throw new Error('Could not get Account ID from STS. Did you set credentials?');
   }
-  if (allowedAccountIds !== accountId) {
+  if (allowedAccountIds && allowedAccountIds !== accountId) {
     throw new Error('Account ID does not match the expected value.');
   }
   if (maskAccountId) {
