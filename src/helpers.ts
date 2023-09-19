@@ -55,12 +55,19 @@ export function exportRegion(region: string) {
 }
 
 // Obtains account ID from STS Client and sets it as output
-export async function exportAccountId(credentialsClient: CredentialsClient, maskAccountId?: boolean) {
+export async function exportAccountId(
+  credentialsClient: CredentialsClient,
+  maskAccountId?: boolean,
+  allowedAccountIds?: string
+) {
   const client = credentialsClient.stsClient;
   const identity = await client.send(new GetCallerIdentityCommand({}));
   const accountId = identity.Account;
   if (!accountId) {
     throw new Error('Could not get Account ID from STS. Did you set credentials?');
+  }
+  if (allowedAccountIds !== accountId) {
+    throw new Error('Account ID does not match the expected value.');
   }
   if (maskAccountId) {
     core.setSecret(accountId);

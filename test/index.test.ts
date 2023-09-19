@@ -468,6 +468,29 @@ describe('Configure AWS Credentials', () => {
     expect(core.getIDToken).toHaveBeenCalledTimes(1);
   });
 
+  test('allowed-account-ids', async () => {
+    process.env['GITHUB_ACTIONS'] = 'true';
+    process.env['ACTIONS_ID_TOKEN_REQUEST_TOKEN'] = 'test-token';
+
+    jest.spyOn(core, 'getInput').mockImplementation(
+      mockGetInput({
+        'role-to-assume': ROLE_ARN,
+        'aws-region': FAKE_REGION,
+        'allowed-account-ids': FAKE_ROLE_ACCOUNT_ID,
+      })
+    );
+
+    await run();
+
+    expect(mockedSTS.commandCalls(AssumeRoleWithWebIdentityCommand)[0]?.args[0].input).toEqual({
+      RoleArn: 'arn:aws:iam::111111111111:role/MY-ROLE',
+      RoleSessionName: 'GitHubActions',
+      DurationSeconds: 3600,
+      WebIdentityToken: 'testtoken',
+    });
+    expect(core.getIDToken).toHaveBeenCalledTimes(1);
+  });
+
   test('getIDToken call retries when failing', async () => {
     process.env['GITHUB_ACTIONS'] = 'true';
     process.env['ACTIONS_ID_TOKEN_REQUEST_TOKEN'] = 'test-token';

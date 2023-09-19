@@ -44,6 +44,7 @@ export async function run() {
     const outputCredentials = outputCredentialsInput.toLowerCase() === 'true';
     const unsetCurrentCredentialsInput = core.getInput('unset-current-credentials', { required: false }) || 'false';
     const unsetCurrentCredentials = unsetCurrentCredentialsInput.toLowerCase() === 'true';
+    const allowedAccountIds = core.getInput('allowed-account-ids', { required: false });
     const disableRetryInput = core.getInput('disable-retry', { required: false }) || 'false';
     let disableRetry = disableRetryInput.toLowerCase() === 'true';
     const specialCharacterWorkaroundInput =
@@ -177,7 +178,7 @@ export async function run() {
       if (!process.env['GITHUB_ACTIONS'] || AccessKeyId) {
         await credentialsClient.validateCredentials(roleCredentials.Credentials?.AccessKeyId);
       }
-      await exportAccountId(credentialsClient, maskAccountId);
+      await exportAccountId(credentialsClient, maskAccountId, allowedAccountIds);
     } else {
       core.info('Proceeding with IAM user credentials');
     }

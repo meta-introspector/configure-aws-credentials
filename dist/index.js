@@ -296,12 +296,15 @@ function exportRegion(region) {
 }
 exports.exportRegion = exportRegion;
 // Obtains account ID from STS Client and sets it as output
-async function exportAccountId(credentialsClient, maskAccountId) {
+async function exportAccountId(credentialsClient, maskAccountId, allowedAccountIds) {
     const client = credentialsClient.stsClient;
     const identity = await client.send(new client_sts_1.GetCallerIdentityCommand({}));
     const accountId = identity.Account;
     if (!accountId) {
         throw new Error('Could not get Account ID from STS. Did you set credentials?');
+    }
+    if (allowedAccountIds !== accountId) {
+        throw new Error('Account ID does not match the expected value.');
     }
     if (maskAccountId) {
         core.setSecret(accountId);
@@ -449,6 +452,7 @@ async function run() {
         const outputCredentials = outputCredentialsInput.toLowerCase() === 'true';
         const unsetCurrentCredentialsInput = core.getInput('unset-current-credentials', { required: false }) || 'false';
         const unsetCurrentCredentials = unsetCurrentCredentialsInput.toLowerCase() === 'true';
+        const allowedAccountIds = core.getInput('allowed-account-ids', { required: false });
         const disableRetryInput = core.getInput('disable-retry', { required: false }) || 'false';
         let disableRetry = disableRetryInput.toLowerCase() === 'true';
         const specialCharacterWorkaroundInput = core.getInput('special-characters-workaround', { required: false }) || 'false';
@@ -563,7 +567,7 @@ async function run() {
             if (!process.env['GITHUB_ACTIONS'] || AccessKeyId) {
                 await credentialsClient.validateCredentials(roleCredentials.Credentials?.AccessKeyId);
             }
-            await (0, helpers_1.exportAccountId)(credentialsClient, maskAccountId);
+            await (0, helpers_1.exportAccountId)(credentialsClient, maskAccountId, allowedAccountIds);
         }
         else {
             core.info('Proceeding with IAM user credentials');
