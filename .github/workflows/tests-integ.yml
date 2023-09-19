@@ -26,7 +26,7 @@ jobs:
           role-duration-seconds: 900
           role-session-name: IntegOidcAssumeRole
           role-external-id: ${{ secrets.SECRETS_OIDC_AWS_ROLE_EXTERNAL_ID }}
-  integ-oidc:
+  allowed-account-ids:
     permissions:
       contents: read
       id-token: write
