@@ -13,6 +13,6 @@ jobs:
       discussions: write
     steps:
       - name: Stale discussions action
-        uses: meta-introspector/handle-stale-discussions@main
+        uses: meta-introspector/handle-stale-discussions@v1
         env:
           GITHUB_TOKEN:  ${{secrets.GITHUB_TOKEN}}

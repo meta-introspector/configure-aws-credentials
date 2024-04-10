@@ -14,13 +14,13 @@ jobs:
     timeout-minutes: 5
     steps:
       - name: "Checkout repository"
-        uses: meta-introspector/checkout@main
+        uses: meta-introspector/checkout@v4
       - name: "Setup node"
-        uses: meta-introspector/setup-node@main
+        uses: meta-introspector/setup-node@v4
         with:
           node-version: 20
       - name: "Install dependencies"
-        uses: meta-introspector/npm-install@main
+        uses: bahmutov/npm-install@v1
       - name: "Run tests"
         run: npm run test --if-present
   lint:
@@ -29,12 +29,12 @@ jobs:
     timeout-minutes: 5
     steps:
       - name: "Checkout repostiory"
-        uses: meta-introspector/checkout@main
+        uses: meta-introspector/checkout@v4
       - name: "Setup node"
-        uses: meta-introspector/setup-node@main
+        uses: meta-introspector/setup-node@v4
         with:
           node-version: 20
       - name: "Install dependencies"
-        uses: meta-introspector/npm-install@main
+        uses: bahmutov/npm-install@v1
       - name: "Lint code"
         run: npm run lint --if-present

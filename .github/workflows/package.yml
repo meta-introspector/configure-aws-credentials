@@ -17,7 +17,7 @@ jobs:
       contents: read
     steps:
       - name: Checkout
-        uses: meta-introspector/checkout@v4
+        uses: meta-introspector/checkout@main
         with:
           fetch-depth: 0
           ref: ${{ github.ref_name }}
@@ -28,14 +28,14 @@ jobs:
           npm test
           npm run package
       - name: Configure AWS credentials
-        uses: meta-introspector/configure-aws-credentials@v4
+        uses: meta-introspector/configure-aws-credentials@main
         with:
           aws-region: us-west-2
           role-to-assume: ${{ secrets.SECRETS_AWS_PACKAGING_ROLE_TO_ASSUME }}
           role-duration-seconds: 900
           role-session-name: SecretsManagerFetch
       - name: Get bot user token
-        uses: meta-introspector/aws-secretsmanager-get-secrets@v1
+        uses: meta-introspector/aws-secretsmanager-get-secrets@main
         with:
           parse-json-secrets: true
           secret-ids: |
