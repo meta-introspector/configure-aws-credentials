@@ -20,7 +20,7 @@ jobs:
         with:
           node-version: 20
       - name: "Install dependencies"
-        uses: bahmutov/npm-install@v1
+        uses: meta-introspector/npm-install@v1
       - name: "Run tests"
         run: npm run test --if-present
   lint:
@@ -35,6 +35,6 @@ jobs:
         with:
           node-version: 20
       - name: "Install dependencies"
-        uses: bahmutov/npm-install@v1
+        uses: meta-introspector/npm-install@v1
       - name: "Lint code"
         run: npm run lint --if-present
